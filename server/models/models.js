@@ -7,7 +7,6 @@ exports.fetchTopics = () => {
     `
     return db.query(queryString)
     .then((res) => {
-        // console.log(res.rows, "<< rows")
         return res.rows;
     })
 
