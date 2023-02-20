@@ -25,11 +25,11 @@ exports.fetchArticles = () => {
     COUNT(comment_id) AS comment_count
     FROM articles
     JOIN comments ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id;
+    GROUP BY articles.article_id
+    ORDER BY created_at DESC;
     `
     return db.query(queryString)
     .then((res) => {
-        console.log(res.rows);
         return res.rows;
     });
 };

@@ -1,4 +1,5 @@
 const request = require("supertest");
+
 const app = require("../app.js");
 const seed = require("../db/seeds/seed.js");
 const {
@@ -24,6 +25,7 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.topics).toBeInstanceOf(Array);
+        expect(body.topics.length).toBeGreaterThan(0);
         body.topics.forEach((topic) => {
           expect(topic).toMatchObject({
             slug: expect.any(String),
@@ -41,6 +43,8 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body.articles).toBeInstanceOf(Array);
+          expect(body.articles).toBeSorted({key: 'created_at', descending: true});
+          expect(body.articles.length).toBeGreaterThan(0);
           body.articles.forEach((article) => {
             expect(article).toMatchObject({
                 article_id: expect.any(Number),
