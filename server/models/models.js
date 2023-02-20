@@ -22,7 +22,7 @@ exports.fetchArticles = () => {
     articles.created_at,
     articles.votes,
     article_img_url,
-    COUNT(comment_id) AS comment_count
+    CAST(COUNT(comment_id) AS INT) AS comment_count
     FROM articles
     JOIN comments ON comments.article_id = articles.article_id
     GROUP BY articles.article_id
@@ -30,6 +30,7 @@ exports.fetchArticles = () => {
     `
     return db.query(queryString)
     .then((res) => {
+        console.log(res.rows)
         return res.rows;
     });
 };
