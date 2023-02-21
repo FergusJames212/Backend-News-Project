@@ -1,19 +1,17 @@
 const db = require("../../db/connection.js");
 
 exports.fetchTopics = () => {
-    let queryString = 
-    `
+  let queryString = `
     SELECT * FROM topics;
-    `
-    return db.query(queryString)
-    .then((res) => {
-        return res.rows;
-    });
+    `;
+  return db.query(queryString).then((res) => {
+    return res.rows;
+  });
 };
 
 exports.fetchArticles = () => {
-    let queryString = 
-    `
+
+  let queryString = `
     SELECT
     articles.article_id,
     title,
@@ -27,10 +25,27 @@ exports.fetchArticles = () => {
     JOIN comments ON comments.article_id = articles.article_id
     GROUP BY articles.article_id
     ORDER BY created_at DESC;
-    `
-    return db.query(queryString)
-    .then((res) => {
-        console.log(res.rows)
-        return res.rows;
-    });
+    `;
+
+  return db.query(queryString).then((res) => {
+    return res.rows;
+  });
 };
+
+exports.fetchArticlesById = (article_id) => {
+
+  let queryString = 
+  `
+  SELECT * FROM articles
+  WHERE articles.article_id = $1
+  `;
+
+  return db.query(queryString, [article_id]).then((res) => {
+    if (res.rowCount === 0) {
+        return Promise.reject("No article of that id found")
+    };
+    return res.rows;
+  });
+};
+
+
