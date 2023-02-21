@@ -1,0 +1,46 @@
+// Miss read question so started this early but would like to keep as might be useful for task 10 please ignore for now
+
+//   if (queries.search !== undefined) {
+//     searchSQL += `WHERE articles.article_id = $1`;
+//     queryParams.push(queries.search);
+//   }
+
+// if (result.rowCount === 0) {
+//     return Promise.reject('article_id not found')
+// }
+
+// Miss read question so started this early but would like to keep as might be useful for task 10 please ignore for now
+
+/*
+it("200: filters results when an article_id search query is added to the path", () => {
+  const article = {
+    article_id: 1,
+    title: "Living in the shadow of a great man",
+    topic: "mitch",
+    author: "butter_bridge",
+    created_at: "2020-07-09T20:11:00.000Z",
+    votes: 100,
+    article_img_url:
+      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    comment_count: 11,
+  };
+
+  return request(app)
+    .get("/api/articles?search=1")
+    .expect(200)
+    .then(({ body }) => {
+      expect(body.articles).toBeInstanceOf(Array);
+      expect(body.articles.length).toBe(1);
+      expect(body.articles[0]).toEqual(article);
+    });
+});
+
+it("400: returns a 400 error when given a query that isn't a valid article_id", () => {
+  return request(app)
+    .get("/api/articles?search=not-valid-id")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Invalid article_id");
+    });
+});
+*/

@@ -48,13 +48,4 @@ exports.fetchArticlesById = (article_id) => {
   });
 };
 
-// Miss read question so started this early but would like to keep as might be useful for task 10 please ignore for now
 
-//   if (queries.search !== undefined) {
-//     searchSQL += `WHERE articles.article_id = $1`;
-//     queryParams.push(queries.search);
-//   }
-
-// if (result.rowCount === 0) {
-//     return Promise.reject('article_id not found')
-// }

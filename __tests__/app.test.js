@@ -37,16 +37,12 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles", () => {
-  it("200: responds with an array of article objects, each containing author, title, article id, topic, creation time, votes, and article image url properties. Each object should also have a comment count property, calculated using queries. The articles should be ordered by date in descending order", () => {
+  it("200: responds with an array of article objects, each containing author, title, article id, topic, creation time, votes, and article image url properties.", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toBeInstanceOf(Array);
-        expect(body.articles).toBeSorted({
-          key: "created_at",
-          descending: true,
-        });
         expect(body.articles.length).toBeGreaterThan(0);
         body.articles.forEach((article) => {
           expect(article).toMatchObject({
@@ -57,6 +53,23 @@ describe("GET /api/articles", () => {
             created_at: expect.any(String),
             votes: expect.any(Number),
             article_img_url: expect.any(String),
+          });
+        });
+      });
+  });
+
+  it("200: should also have a comment count property, calculated using queries. The articles should be ordered by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+        expect(body.articles.length).toBeGreaterThan(0);
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
             comment_count: expect.any(Number),
           });
         });
@@ -64,7 +77,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe.only("GET /api/articles/:id", () => {
+describe("GET /api/articles/:id", () => {
   const article = {
     author: "butter_bridge",
     title: "Living in the shadow of a great man",
@@ -82,9 +95,9 @@ describe.only("GET /api/articles/:id", () => {
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.articles).toBeInstanceOf(Array);
-        expect(body.articles.length).toBe(1);
-        expect(body.articles[0]).toEqual(article);
+        expect(body.article).toBeInstanceOf(Array);
+        expect(body.article.length).toBe(1);
+        expect(body.article[0]).toEqual(article);
       });
   });
 
@@ -107,38 +120,3 @@ describe.only("GET /api/articles/:id", () => {
   });
 });
 
-// Miss read question so started this early but would like to keep as might be useful for task 10 please ignore for now
-
-/*
-it("200: filters results when an article_id search query is added to the path", () => {
-  const article = {
-    article_id: 1,
-    title: "Living in the shadow of a great man",
-    topic: "mitch",
-    author: "butter_bridge",
-    created_at: "2020-07-09T20:11:00.000Z",
-    votes: 100,
-    article_img_url:
-      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
-    comment_count: 11,
-  };
-
-  return request(app)
-    .get("/api/articles?search=1")
-    .expect(200)
-    .then(({ body }) => {
-      expect(body.articles).toBeInstanceOf(Array);
-      expect(body.articles.length).toBe(1);
-      expect(body.articles[0]).toEqual(article);
-    });
-});
-
-it("400: returns a 400 error when given a query that isn't a valid article_id", () => {
-  return request(app)
-    .get("/api/articles?search=not-valid-id")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("Invalid article_id");
-    });
-});
-*/
