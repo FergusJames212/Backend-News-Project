@@ -48,4 +48,18 @@ exports.fetchArticlesById = (article_id) => {
   });
 };
 
+exports.insertComment = (article_id, author, body) => {
 
+    let queryString = 
+    `
+    INSERT INTO comments
+    (article_id, author, body, votes)
+    VALUES
+    ($1, $2, $3, 0)
+    RETURNING *;
+    `;
+
+    return db.query(queryString, [article_id, author, body]).then((res) => {
+        return res.rows[0];
+    });
+};

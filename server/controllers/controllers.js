@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticles, fetchArticlesById } = require("../models/models.js");
+const { fetchTopics, fetchArticles, fetchArticlesById, insertComment } = require("../models/models.js");
 
 exports.getTopics = (req, res, next) => {    
     fetchTopics()
@@ -25,6 +25,18 @@ exports.getArticlesById = (req, res, next) => {
     fetchArticlesById(article_id)
     .then((article) => {
         res.status(200).send({ article })
+    })
+    .catch((err) => {
+        next(err);
+    });
+};
+
+exports.postComment = (req, res, next) => {
+    const article_id = req.params.article_id;
+    const { author, body } = req.body;
+    insertComment(article_id, author, body)
+    .then((comment) => {
+        res.status(201).send({ comment })
     })
     .catch((err) => {
         next(err);
