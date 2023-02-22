@@ -33,9 +33,18 @@ exports.getArticlesById = (req, res, next) => {
 
 exports.getCommentsByArticleId = (req, res, next) => {
     const article_id = req.params.article_id;
-    fetchCommentsByArticleId(article_id)
-    .then((comments) => {
-        res.status(200).send({ comments })
+    
+    const articleCheck = fetchArticlesById(article_id);
+    const commentsPromise = fetchCommentsByArticleId(article_id);
+
+    Promise.all([commentsPromise, articleCheck])
+    .then((response) => {
+        comments = response[0]
+        article = response[1]
+        if (article.length === 0) {
+            return Promise.reject("No article of that id found");
+        };
+        res.status(200).send({ comments });
     })
     .catch((err) => {
         next(err);

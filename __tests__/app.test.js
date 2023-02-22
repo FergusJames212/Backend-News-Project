@@ -144,6 +144,28 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 
+  it("200: comments should return most recently posted first", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+      });
+  });
+
+  it("200: returns an empty array when given a valid article_id but there is no comments on that article", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+        .then(({ body }) => {
+          expect(body.comments).toBeInstanceOf(Array);
+          expect(body.comments.length).toBe(0);
+      });
+  });
+
   it("400: returns an error when given an invalid article_id", () => {
     return request(app)
       .get("/api/articles/invalid-id/comments")
@@ -153,12 +175,12 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 
-  it("404: returns an error when given a valid article_id but there are no comments on the article", () => {
+  it("404: returns an error when given a valid article_id but no article with that id exists", () => {
     return request(app)
-      .get("/api/articles/2/comments")
-      .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("No comments on that article");
-      });
+    .get("/api/articles/50/comments")
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("No article of that id found");
+    });
   });
 });
