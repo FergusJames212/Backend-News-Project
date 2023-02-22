@@ -98,7 +98,7 @@ describe("GET /api/articles/:id", () => {
     created_at: "2020-07-09T20:11:00.000Z",
     votes: 100,
     article_img_url:
-      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+      "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
   };
 
   it("200: responds with a single article object inside an array with matching article_id to :id", () => {
@@ -132,29 +132,40 @@ describe("GET /api/articles/:id", () => {
 });
 
 describe("POST /api/articles/:article_id/comments", () => {
-  
   it("201: accepts an object with username and body properties and fills out all other properties, responding with the full posted comment", () => {
     const comment = {
       author: "butter_bridge",
-      body: "my comment"
+      body: "my comment",
     };
     return request(app)
       .post("/api/articles/4/comments")
       .send(comment)
       .expect(201)
       .then(({ body }) => {
-        console.log(body, "test body")
         expect(body.comment).toBeInstanceOf(Object);
         expect(body.comment.author).toBe("butter_bridge");
         expect(body.comment.body).toBe("my comment");
-          expect(body.comment).toMatchObject({
-            article_id: expect.any(Number),
-            comment_id: expect.any(Number),
-            body: expect.any(String),
-            author: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-          });
+        expect(body.comment).toMatchObject({
+          article_id: expect.any(Number),
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+      });
+  });
+
+  it("400: throws an error when object provided is missing info that should fill not null columns in table", () => {
+    const comment = {
+      author: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not null violation");
       });
   });
 });
