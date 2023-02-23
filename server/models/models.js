@@ -10,7 +10,6 @@ exports.fetchTopics = () => {
 };
 
 exports.fetchArticles = () => {
-
   let queryString = `
     SELECT
     articles.article_id,
@@ -33,21 +32,20 @@ exports.fetchArticles = () => {
 };
 
 exports.fetchArticlesById = (article_id) => {
-
-  let queryString = 
-  `
+  let queryString = `
   SELECT * FROM articles
   WHERE articles.article_id = $1
   `;
 
   return db.query(queryString, [article_id]).then((res) => {
     if (res.rowCount === 0) {
-        return Promise.reject("No article of that id found")
-    };
+      return Promise.reject("No article of that id found");
+    }
     return res.rows;
   });
 };
 
+7.POST/api/articles/aritcle_id/comments
 exports.insertComment = (article_id, author, body) => {
 
     let queryString = 
@@ -62,4 +60,16 @@ exports.insertComment = (article_id, author, body) => {
     return db.query(queryString, [article_id, author, body]).then((res) => {
         return res.rows[0];
     });
+};
+
+exports.fetchCommentsByArticleId = (article_id) => {
+  let queryString = `
+    SELECT * FROM comments
+    WHERE article_id = $1
+    ORDER BY created_at DESC;
+    `;
+
+  return db.query(queryString, [article_id]).then((res) => {
+    return res.rows;
+  });
 };

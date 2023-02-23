@@ -12,11 +12,9 @@ exports.handlePSQL400 = (err, req, res, next) => {
     res.status(400).send({ msg: "Bad request" });
   } else if (err.code === "23502") {
     res.status(400).send({msg: "Not null violation"})
-  } 
-  else if (err.code === "23503") {
+  } else if (err.code === "23503") {
     res.status(400).send({msg: "Foreign key violation"})
-  } 
-  else {
+  } else {
     next(err);
   };
 };

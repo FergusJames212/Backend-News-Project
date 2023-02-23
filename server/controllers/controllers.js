@@ -1,4 +1,5 @@
-const { fetchTopics, fetchArticles, fetchArticlesById, insertComment } = require("../models/models.js");
+7.POST/api/articles/aritcle_id/comments
+const { fetchTopics, fetchArticles, fetchArticlesById, insertComment, fetchCommentsByArticleId } = require("../models/models.js");
 
 exports.getTopics = (req, res, next) => {    
     fetchTopics()
@@ -31,12 +32,28 @@ exports.getArticlesById = (req, res, next) => {
     });
 };
 
+7.POST/api/articles/aritcle_id/comments
 exports.postComment = (req, res, next) => {
     const article_id = req.params.article_id;
     const { author, body } = req.body;
     insertComment(article_id, author, body)
     .then((comment) => {
         res.status(201).send({ comment })
+
+exports.getCommentsByArticleId = (req, res, next) => {
+    const article_id = req.params.article_id;
+    
+    const articleCheck = fetchArticlesById(article_id);
+    const commentsPromise = fetchCommentsByArticleId(article_id);
+
+    Promise.all([commentsPromise, articleCheck])
+    .then((response) => {
+        comments = response[0]
+        article = response[1]
+        if (article.length === 0) {
+            return Promise.reject("No article of that id found");
+        };
+        res.status(200).send({ comments });
     })
     .catch((err) => {
         next(err);
