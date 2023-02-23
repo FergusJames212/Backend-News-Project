@@ -45,7 +45,6 @@ exports.fetchArticlesById = (article_id) => {
   });
 };
 
-7.POST/api/articles/aritcle_id/comments
 exports.insertComment = (article_id, author, body) => {
 
     let queryString = 

@@ -131,7 +131,71 @@ describe("GET /api/articles/:id", () => {
   });
 });
 
-7.POST/api/articles/aritcle_id/comments
+describe("GET /api/articles/:article_id/comments", () => {
+  it("200: responds with an array of comment objects containing the following properties; comment_id, votes, created_at, author, body & article_id", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments.length).toBeGreaterThan(0);
+        expect(
+          body.comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+            });
+            expect(comment.article_id).toBe(3);
+          })
+        );
+      });
+  });
+
+  it("200: comments should return most recently posted first", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+      });
+  });
+
+  it("200: returns an empty array when given a valid article_id but there is no comments on that article", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toBeInstanceOf(Array);
+        expect(body.comments.length).toBe(0);
+      });
+  });
+
+  it("400: returns an error when given an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/invalid-id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  it("404: returns an error when given a valid article_id but no article with that id exists", () => {
+    return request(app)
+      .get("/api/articles/50/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("No article of that id found");
+      });
+  });
+});
+
 describe("POST /api/articles/:article_id/comments", () => {
   it("201: accepts an object with username and body properties and fills out all other properties, responding with the full posted comment", () => {
     const comment = {
@@ -197,69 +261,18 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Foreign key violation");
       });
   });
-});
 
-describe("GET /api/articles/:article_id/comments", () => {
-  it("200: responds with an array of comment objects containing the following properties; comment_id, votes, created_at, author, body & article_id", () => {
+  it("400: throws error when request made to valid article_id but username is not in username table", () => {
+    const comment = {
+      author: "fergus",
+      body: "my comment",
+    };
     return request(app)
-      .get("/api/articles/3/comments")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comments).toBeInstanceOf(Array);
-        expect(body.comments.length).toBeGreaterThan(0);
-        expect(
-          body.comments.forEach((comment) => {
-            expect(comment).toMatchObject({
-              comment_id: expect.any(Number),
-              votes: expect.any(Number),
-              created_at: expect.any(String),
-              author: expect.any(String),
-              body: expect.any(String),
-              article_id: expect.any(Number)
-            });
-            expect(comment.article_id).toBe(3);
-          })
-        );
-      });
-  });
-
-  it("200: comments should return most recently posted first", () => {
-    return request(app)
-      .get("/api/articles/3/comments")
-      .expect(200)
-      .then(({ body }) => {
-        expect(body.comments).toBeSorted({
-          key: "created_at",
-          descending: true,
-        });
-      });
-  });
-
-  it("200: returns an empty array when given a valid article_id but there is no comments on that article", () => {
-    return request(app)
-      .get("/api/articles/2/comments")
-      .expect(200)
-        .then(({ body }) => {
-          expect(body.comments).toBeInstanceOf(Array);
-          expect(body.comments.length).toBe(0);
-      });
-  });
-
-  it("400: returns an error when given an invalid article_id", () => {
-    return request(app)
-      .get("/api/articles/invalid-id/comments")
+      .post("/api/articles/5/comments")
+      .send(comment)
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe("Foreign key violation");
       });
-  });
-
-  it("404: returns an error when given a valid article_id but no article with that id exists", () => {
-    return request(app)
-    .get("/api/articles/50/comments")
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toBe("No article of that id found");
-    });
   });
 });
