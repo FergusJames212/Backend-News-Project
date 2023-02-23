@@ -44,3 +44,19 @@ it("400: returns a 400 error when given a query that isn't a valid article_id", 
     });
 });
 */
+
+
+
+it("400: throws an error when object provided has infomation of the incorrect data type", () => {
+  const comment = {
+    author: "butter_bridge",
+    body: 5
+  };
+  return request(app)
+    .post("/api/articles/4/comments")
+    .send(comment)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("foreign key violation");
+    });
+});

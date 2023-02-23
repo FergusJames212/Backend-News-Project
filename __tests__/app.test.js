@@ -18,6 +18,17 @@ afterAll(() => {
   return db.end();
 });
 
+describe("ANY /api/invalid-path", () => {
+  it("404: responds with an error informing the user an invalid path has been given", () => {
+    return request(app)
+      .get("/api/invalid-path")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid path");
+      });
+  });
+});
+
 describe("GET /api/topics", () => {
   it("200: responds with an array of topic objects, each containing a slug and a description", () => {
     return request(app)
@@ -116,6 +127,74 @@ describe("GET /api/articles/:id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("No article of that id found");
+      });
+  });
+});
+
+7.POST/api/articles/aritcle_id/comments
+describe("POST /api/articles/:article_id/comments", () => {
+  it("201: accepts an object with username and body properties and fills out all other properties, responding with the full posted comment", () => {
+    const comment = {
+      author: "butter_bridge",
+      body: "my comment",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toBeInstanceOf(Object);
+        expect(body.comment.author).toBe("butter_bridge");
+        expect(body.comment.body).toBe("my comment");
+        expect(body.comment).toMatchObject({
+          article_id: expect.any(Number),
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          author: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+      });
+  });
+
+  it("400: throws an error when object provided is missing info that should fill not null columns in table", () => {
+    const comment = {
+      author: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/4/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Not null violation");
+      });
+  });
+
+  it("400: throws an error when article_id provided is invalid", () => {
+    const comment = {
+      author: "butter_bridge",
+      body: "my comment",
+    };
+    return request(app)
+      .post("/api/articles/bananas/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  it("404: throws an error when article_id provided is valid but no article with that id exists", () => {
+    const comment = {
+      author: "butter_bridge",
+      body: "my comment",
+    };
+    return request(app)
+      .post("/api/articles/50/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Foreign key violation");
       });
   });
 });
