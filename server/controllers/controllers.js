@@ -1,4 +1,3 @@
-
 const { fetchTopics, fetchArticles, fetchArticlesById, insertComment, fetchCommentsByArticleId } = require("../models/models.js");
 
 exports.getTopics = (req, res, next) => {    
