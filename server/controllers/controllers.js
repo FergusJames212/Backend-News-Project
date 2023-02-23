@@ -40,7 +40,7 @@ exports.patchArticleById = (req, res, next) => {
         if (typeof { article }.article === "undefined") {
             return Promise.reject("No article of that id found");
         };
-        res.status(201).send({ article });
+        res.status(200).send({ article });
     })
     .catch((err) => {
         next(err);

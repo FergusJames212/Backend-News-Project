@@ -140,7 +140,7 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/1")
       .send(inc_votes)
-      .expect(201)
+      .expect(200)
       .then(({ body }) => {
         expect(body.article).toEqual(article);
       });
