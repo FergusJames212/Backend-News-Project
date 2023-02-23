@@ -168,4 +168,32 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("Not null violation");
       });
   });
+
+  it("400: throws an error when article_id provided is invalid", () => {
+    const comment = {
+      author: "butter_bridge",
+      body: "my comment",
+    };
+    return request(app)
+      .post("/api/articles/bananas/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
+      });
+  });
+
+  it("404: throws an error when article_id provided is valid but no article with that id exists", () => {
+    const comment = {
+      author: "butter_bridge",
+      body: "my comment",
+    };
+    return request(app)
+      .post("/api/articles/50/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Foreign key violation");
+      });
+  });
 });
