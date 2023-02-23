@@ -28,9 +28,9 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postComment);
 
-app.all("*", handleInvalidPath);
-
 app.patch('/api/articles/:article_id', patchArticleById);
+
+app.all("*", handleInvalidPath);
 
 app.use(handlePSQL400);
 app.use(handleCustomErrors);
