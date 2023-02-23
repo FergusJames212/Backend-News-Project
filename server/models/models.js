@@ -45,6 +45,23 @@ exports.fetchArticlesById = (article_id) => {
   });
 };
 
+7.POST/api/articles/aritcle_id/comments
+exports.insertComment = (article_id, author, body) => {
+
+    let queryString = 
+    `
+    INSERT INTO comments
+    (article_id, author, body, votes)
+    VALUES
+    ($1, $2, $3, 0)
+    RETURNING *;
+    `;
+
+    return db.query(queryString, [article_id, author, body]).then((res) => {
+        return res.rows[0];
+    });
+};
+
 exports.fetchCommentsByArticleId = (article_id) => {
   let queryString = `
     SELECT * FROM comments

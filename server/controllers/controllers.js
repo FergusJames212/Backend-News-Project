@@ -1,4 +1,5 @@
-const { fetchTopics, fetchArticles, fetchArticlesById, fetchCommentsByArticleId } = require("../models/models.js");
+7.POST/api/articles/aritcle_id/comments
+const { fetchTopics, fetchArticles, fetchArticlesById, insertComment, fetchCommentsByArticleId } = require("../models/models.js");
 
 exports.getTopics = (req, res, next) => {    
     fetchTopics()
@@ -30,6 +31,14 @@ exports.getArticlesById = (req, res, next) => {
         next(err);
     });
 };
+
+7.POST/api/articles/aritcle_id/comments
+exports.postComment = (req, res, next) => {
+    const article_id = req.params.article_id;
+    const { author, body } = req.body;
+    insertComment(article_id, author, body)
+    .then((comment) => {
+        res.status(201).send({ comment })
 
 exports.getCommentsByArticleId = (req, res, next) => {
     const article_id = req.params.article_id;
