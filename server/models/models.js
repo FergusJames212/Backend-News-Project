@@ -45,6 +45,22 @@ exports.fetchArticlesById = (article_id) => {
   });
 };
 
+exports.updateArticleById = (article_id, inc_votes) => {
+    let queryString = 
+    `
+    UPDATE articles
+    SET
+    votes = votes + $1
+    WHERE article_id = $2
+    RETURNING *;
+    `;
+    
+    return db.query(queryString, [inc_votes, article_id])
+    .then((res) => {
+        return res.rows[0];
+    });
+};
+
 exports.insertComment = (article_id, author, body) => {
 
     let queryString = 

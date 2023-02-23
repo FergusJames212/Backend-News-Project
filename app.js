@@ -1,3 +1,4 @@
+
 const express = require("express");
 const {
   getTopics,
@@ -5,6 +6,7 @@ const {
   getArticlesById,
   getCommentsByArticleId,
   postComment,
+  patchArticleById
 } = require("./server/controllers/controllers.js");
 const {
   handleInvalidPath,
@@ -27,6 +29,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.all("*", handleInvalidPath);
+
+app.patch('/api/articles/:article_id', patchArticleById);
 
 app.use(handlePSQL400);
 app.use(handleCustomErrors);

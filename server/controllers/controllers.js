@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticles, fetchArticlesById, insertComment, fetchCommentsByArticleId } = require("../models/models.js");
+const { fetchTopics, fetchArticles, fetchArticlesById, insertComment, fetchCommentsByArticleId, updateArticleById } = require("../models/models.js");
 
 exports.getTopics = (req, res, next) => {    
     fetchTopics()
@@ -30,6 +30,17 @@ exports.getArticlesById = (req, res, next) => {
         next(err);
     });
 };
+
+exports.patchArticleById = (req, res, next) => {
+    const article_id = req.params.article_id;
+    const inc_votes = req.body.inc_votes;
+
+    updateArticleById(article_id, inc_votes)
+    .then((article) => {
+        if (typeof { article }.article === "undefined") {
+            return Promise.reject("No article of that id found");
+        };
+        res.status(200).send({ article });
 
 exports.postComment = (req, res, next) => {
     const article_id = req.params.article_id;
