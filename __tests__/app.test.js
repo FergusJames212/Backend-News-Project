@@ -120,3 +120,68 @@ describe("GET /api/articles/:id", () => {
   });
 });
 
+describe("PATCH /api/articles/:article_id", () => {
+  it("200: accepts an object with property inc_votes and increments the article with :article_id by that much, returning the updated article", () => {
+    
+    const inc_votes = { inc_votes: 2 };
+
+    const article = {
+      author: "butter_bridge",
+      title: "Living in the shadow of a great man",
+      article_id: 1,
+      body: "I find this existence challenging",
+      topic: "mitch",
+      created_at: "2020-07-09T20:11:00.000Z",
+      votes: 102,
+      article_img_url:
+        "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+    };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(inc_votes)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.article).toEqual(article);
+      });
+  });
+
+  it("400: returns an error when given an incorrect data type in the object", () => {
+    
+    const inc_votes = { inc_votes: "banana" };
+
+    return request(app)
+      .patch("/api/articles/1")
+      .send(inc_votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+
+  it("400: returns an error when given an incorrect data type in the article_id", () => {
+    
+    const inc_votes = { inc_votes: 2 };
+
+    return request(app)
+      .patch("/api/articles/not-a-number")
+      .send(inc_votes)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Bad request");
+      });
+  });
+
+  it("404: returns an error when given an article_id of the correct form but no such id exists", () => {
+    
+    const inc_votes = { inc_votes: 2 };
+
+    return request(app)
+      .patch("/api/articles/50")
+      .send(inc_votes)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("No article of that id found");
+      });
+  });
+});
