@@ -88,7 +88,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe("GET /api/articles/:id", () => {
+describe.only("GET /api/articles/:id", () => {
   const article = {
     author: "butter_bridge",
     title: "Living in the shadow of a great man",
@@ -99,16 +99,16 @@ describe("GET /api/articles/:id", () => {
     votes: 100,
     article_img_url:
       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    comment_count: 11
   };
 
-  it("200: responds with a single article object inside an array with matching article_id to :id", () => {
+  it("200: responds with a single article object with matching article_id to :id", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toBeInstanceOf(Array);
-        expect(body.article.length).toBe(1);
-        expect(body.article[0]).toEqual(article);
+        expect(body.article).toBeInstanceOf(Object);
+        expect(body.article).toEqual(article);
       });
   });
 
@@ -127,6 +127,16 @@ describe("GET /api/articles/:id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("No article of that id found");
+      });
+  });
+
+  it("200: should also have a comment count property, calculated using queries. The articles should be ordered by date in descending order", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.article, "body")
+        expect(typeof body.article.comment_count).toBe("number");
       });
   });
 });
@@ -351,7 +361,7 @@ describe("GET /api/users", () => {
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
-            avatar_url: expect.any(String)
+            avatar_url: expect.any(String),
           });
         });
       });
