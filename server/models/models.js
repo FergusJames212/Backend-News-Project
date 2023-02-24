@@ -21,7 +21,7 @@ exports.fetchArticles = () => {
     article_img_url,
     CAST(COUNT(comment_id) AS INT) AS comment_count
     FROM articles
-    JOIN comments ON comments.article_id = articles.article_id
+    LEFT JOIN comments ON comments.article_id = articles.article_id
     GROUP BY articles.article_id
     ORDER BY created_at DESC;
     `;
@@ -37,9 +37,9 @@ exports.fetchArticlesById = (article_id) => {
   articles.* ,
   CAST(COUNT(comment_id) AS INT) AS comment_count
   FROM articles
-  JOIN comments ON comments.article_id = articles.article_id
+  LEFT JOIN comments ON comments.article_id = articles.article_id
   WHERE articles.article_id = $1
-  GROUP BY articles.article_id
+  GROUP BY articles.article_id;
   `;
 
   return db.query(queryString, [article_id]).then((res) => {
@@ -83,6 +83,7 @@ exports.insertComment = (article_id, author, body) => {
 };
 
 exports.fetchCommentsByArticleId = (article_id) => {
+  
   let queryString = `
     SELECT * FROM comments
     WHERE article_id = $1

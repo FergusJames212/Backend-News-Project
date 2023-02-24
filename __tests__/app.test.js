@@ -88,7 +88,7 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe.only("GET /api/articles/:id", () => {
+describe("GET /api/articles/:id", () => {
   const article = {
     author: "butter_bridge",
     title: "Living in the shadow of a great man",
@@ -132,10 +132,9 @@ describe.only("GET /api/articles/:id", () => {
 
   it("200: should also have a comment count property, calculated using queries. The articles should be ordered by date in descending order", () => {
     return request(app)
-      .get("/api/articles/3")
+      .get("/api/articles/2")
       .expect(200)
       .then(({ body }) => {
-        console.log(body.article, "body")
         expect(typeof body.article.comment_count).toBe("number");
       });
   });
