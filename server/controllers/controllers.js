@@ -11,8 +11,18 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-    fetchArticles()
-    .then((articles) => {
+    queries = req.query; 
+    // getTopics
+    const topicsCheck = fetchTopics()
+    const fetchedArticles = fetchArticles(queries)
+    
+    Promise.all([topicsCheck, fetchedArticles])
+    .then((response) => {
+        const topicObjects = response[0];
+        if (topicObjects.find(topic => topic.slug === queries.topic)) {
+            return Promise.reject("That topic doesn't exist")
+        }
+        const articles = response[1];
         res.status(200).send({ articles })
     })
     .catch((err) => {

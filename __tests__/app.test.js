@@ -9,6 +9,7 @@ const {
   commentData,
 } = require("../db/data/test-data");
 const db = require("../db/connection.js");
+const articles = require("../db/data/test-data/articles.js");
 
 beforeEach(() => {
   return seed({ topicData, userData, articleData, commentData });
@@ -29,7 +30,7 @@ describe("GET /api/topics", () => {
         body.topics.forEach((topic) => {
           expect(topic).toMatchObject({
             slug: expect.any(String),
-            description: expect.any(String)
+            description: expect.any(String),
           });
         });
       });
@@ -37,26 +38,74 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles", () => {
-    it("200: responds with an array of article objects, each containing author, title, article id, topic, creation time, votes, and article image url properties. Each object should also have a comment count property, calculated using queries. The articles should be ordered by date in descending order", () => {
-      return request(app)
-        .get("/api/articles")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.articles).toBeInstanceOf(Array);
-          expect(body.articles).toBeSorted({key: 'created_at', descending: true});
-          expect(body.articles.length).toBeGreaterThan(0);
-          body.articles.forEach((article) => {
-            expect(article).toMatchObject({
-                article_id: expect.any(Number),
-                title: expect.any(String),
-                topic: expect.any(String),
-                author: expect.any(String),
-                created_at: expect.any(String),
-                votes: expect.any(Number),
-                article_img_url: expect.any(String),
-                comment_count: expect.any(Number)
-            });
+  it("200: responds with an array of article objects, each containing author, title, article id, topic, creation time, votes, and article image url properties. Each object should also have a comment count property, calculated using queries. The articles should be ordered by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeInstanceOf(Array);
+        expect(body.articles).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+        expect(body.articles.length).toBeGreaterThan(0);
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
           });
         });
-    });
+      });
   });
+
+  it("200: should accept a topic query which filters the output to that topic only", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeInstanceOf(Array);
+        expect(body.articles).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+        expect(body.articles.length).toBe(1);
+        body.articles.forEach((article) => {
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: "cats",
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+      });
+  });
+
+  it("200: if topic query has no articles on it, returns an empty array", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeInstanceOf(Array);
+        expect(body.articles.length).toBe(0);
+      });
+  });
+
+  // it.only("404: if topic query is not a topic, returns an error", () => {
+  //   return request(app)
+  //     .get("/api/articles?topic=bananas")
+  //     .expect(404)
+  //     .then(({ body }) => {
+  //       expect(body.msg).toEqual("Bad request");
+  //     });
+  // });
+});
