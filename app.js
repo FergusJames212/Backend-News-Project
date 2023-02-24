@@ -6,7 +6,8 @@ const {
   getArticlesById,
   getCommentsByArticleId,
   postComment,
-  patchArticleById
+  patchArticleById,
+  getUsers
 } = require("./server/controllers/controllers.js");
 const {
   handleInvalidPath,
@@ -29,6 +30,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.patch('/api/articles/:article_id', patchArticleById);
+
+app.get("/api/users", getUsers);
 
 app.all("*", handleInvalidPath);
 

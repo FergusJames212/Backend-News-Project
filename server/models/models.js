@@ -88,3 +88,12 @@ exports.fetchCommentsByArticleId = (article_id) => {
     return res.rows;
   });
 };
+
+exports.fetchUsers = () => {
+    let queryString = `
+    SELECT * FROM users;
+    `;
+  return db.query(queryString).then((res) => {
+    return res.rows;
+  });
+}
