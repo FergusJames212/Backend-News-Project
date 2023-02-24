@@ -165,7 +165,7 @@ describe("GET /api/articles", () => {
       });
   });
 
-  it("404: if order query is not valid, returns an error", () => {
+  it("400: if order query is not valid, returns an error", () => {
     return request(app)
       .get("/api/articles?order=bananas")
       .expect(400)
