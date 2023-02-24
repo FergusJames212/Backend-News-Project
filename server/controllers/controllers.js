@@ -18,12 +18,25 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles()
-    .then((articles) => {
-      res.status(200).send({ articles });
+    queries = req.query; 
+    // getTopics
+    const topicsCheck = fetchTopics()
+    const fetchedArticles = fetchArticles(queries)
+    
+    Promise.all([topicsCheck, fetchedArticles])
+    .then((response) => {
+        const topicObjects = response[0];
+        const articles = response[1];
+
+        if(Object.keys(req.query).length !== 0) {
+            if (typeof topicObjects.find(topic => topic.slug === queries.topic) !== "object") {
+                return Promise.reject("That topic doesn't exist")
+            }
+        }
+        res.status(200).send({ articles })
     })
     .catch((err) => {
-      next(err);
+        next(err);
     });
 };
 

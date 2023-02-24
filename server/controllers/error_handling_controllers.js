@@ -22,6 +22,8 @@ exports.handlePSQL400 = (err, req, res, next) => {
 exports.handleCustomErrors = (err, req, res, next) => {
   if (err === "No article of that id found") {
     res.status(404).send({ msg: err });
+  } else if (err === "That topic doesn't exist") {
+    res.status(404).send({ msg: err });
   } else {
     next(err);
   };
