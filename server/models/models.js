@@ -11,12 +11,28 @@ exports.fetchTopics = () => {
 
 exports.fetchArticles = (queries) => {
     let filterSQL = ``;
+    let orderSQL = ``;
     const queryValues = [];
+    let counter = 0;
+
     if (queries.topic) {
-      filterSQL += `WHERE articles.topic = $1`;
+    counter++;
+      filterSQL += `WHERE articles.topic = $${counter}`;
       queryValues.push(queries.topic);
     }
-  
+
+    if (queries.sort_by) {
+        sortSQL = `ORDER BY ${queries.sort_by} `;
+    } else {
+        sortSQL = `ORDER BY created_at `;
+    };
+
+    if (queries.order) {
+        orderSQL = `${queries.order.toUpperCase()};`;
+    } else {
+        orderSQL = `DESC;`;
+    };
+
     let queryString =
       `
       SELECT
@@ -34,24 +50,12 @@ exports.fetchArticles = (queries) => {
       filterSQL +
       `
       GROUP BY articles.article_id
-      ORDER BY created_at DESC;
-      `;
-  
+      ` + sortSQL + orderSQL;
+
     return db.query(queryString, queryValues).then((res) => {
       return res.rows;
     });
-  };
-  
-  // if (queries.topic) {
-  //     const filterColumn = queries.topic
-  //       ? format(`%I`, queries.topic)
-  //       : "topic";
-  //     filterSQL += `WHERE articles.topic = ${filterColumn}`;
-  //   }
-  
-  // const queryArgs = queries.topic ? [queryString, [queries.topic]]:[queryString];
-  
-  
+  };  
 
 exports.fetchArticlesById = (article_id) => {
   let queryString = `

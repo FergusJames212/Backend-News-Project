@@ -47,7 +47,7 @@ describe("GET /api/topics", () => {
   });
 });
 
-describe.only("GET /api/articles", () => {
+describe("GET /api/articles", () => {
   it("200: responds with an array of article objects, each containing author, title, article id, topic, creation time, votes, and article image url properties.", () => {
     return request(app)
       .get("/api/articles")
@@ -129,6 +129,48 @@ describe.only("GET /api/articles", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toEqual("That topic doesn't exist");
+      });
+  });
+
+  it("200: takes a sort_by query which selects the column by which to sort the recieved data, defaults to date", () => {
+    return request(app)
+      .get("/api/articles?sort_by=article_id")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSorted({
+          key: "article_id",
+          descending: true,
+        });
+      });
+  });
+
+  it("404: if sort_by query is not valid, returns an error", () => {
+    return request(app)
+      .get("/api/articles?sort_by=bananas")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("That column doesn't exist");
+      });
+  });
+
+  it("200: takes a order query which determines if the data is sorted ascendingly or descendingly, defaults to descending", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toBeSorted({
+          key: "created_at",
+          ascending: true,
+        });
+      });
+  });
+
+  it("404: if order query is not valid, returns an error", () => {
+    return request(app)
+      .get("/api/articles?order=bananas")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toEqual("Invalid order");
       });
   });
 });
