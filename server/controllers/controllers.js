@@ -5,6 +5,7 @@ const {
   insertComment,
   fetchCommentsByArticleId,
   updateArticleById,
+  fetchUsers,
 } = require("../models/models.js");
 
 exports.getTopics = (req, res, next) => {
@@ -79,6 +80,17 @@ exports.getCommentsByArticleId = (req, res, next) => {
         return Promise.reject("No article of that id found");
       }
       res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.getUsers = (req, res, next) => {
+  fetchUsers()
+    .then((users) => {
+      console.log({users})
+      res.status(200).send({ users });
     })
     .catch((err) => {
       next(err);
