@@ -14,7 +14,7 @@ exports.fetchArticles = (queries) => {
     let orderSQL = ``;
     const queryValues = [];
     let counter = 0;
-
+    
     if (queries.topic) {
     counter++;
       filterSQL += `WHERE articles.topic = $${counter}`;
@@ -59,15 +59,20 @@ exports.fetchArticles = (queries) => {
 
 exports.fetchArticlesById = (article_id) => {
   let queryString = `
-  SELECT * FROM articles
+  SELECT 
+  articles.* ,
+  CAST(COUNT(comment_id) AS INT) AS comment_count
+  FROM articles
+  LEFT JOIN comments ON comments.article_id = articles.article_id
   WHERE articles.article_id = $1
+  GROUP BY articles.article_id;
   `;
 
   return db.query(queryString, [article_id]).then((res) => {
     if (res.rowCount === 0) {
       return Promise.reject("No article of that id found");
     }
-    return res.rows;
+    return res.rows[0];
   });
 };
 
@@ -104,6 +109,7 @@ exports.insertComment = (article_id, author, body) => {
 };
 
 exports.fetchCommentsByArticleId = (article_id) => {
+  
   let queryString = `
     SELECT * FROM comments
     WHERE article_id = $1
@@ -114,3 +120,12 @@ exports.fetchCommentsByArticleId = (article_id) => {
     return res.rows;
   });
 };
+
+exports.fetchUsers = () => {
+    let queryString = `
+    SELECT * FROM users;
+    `;
+  return db.query(queryString).then((res) => {
+    return res.rows;
+  });
+}

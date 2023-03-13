@@ -186,16 +186,16 @@ describe("GET /api/articles/:id", () => {
     votes: 100,
     article_img_url:
       "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+    comment_count: 11
   };
 
-  it("200: responds with a single article object inside an array with matching article_id to :id", () => {
+  it("200: responds with a single article object with matching article_id to :id", () => {
     return request(app)
       .get("/api/articles/1")
       .expect(200)
       .then(({ body }) => {
-        expect(body.article).toBeInstanceOf(Array);
-        expect(body.article.length).toBe(1);
-        expect(body.article[0]).toEqual(article);
+        expect(body.article).toBeInstanceOf(Object);
+        expect(body.article).toEqual(article);
       });
   });
 
@@ -214,6 +214,15 @@ describe("GET /api/articles/:id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("No article of that id found");
+      });
+  });
+
+  it("200: should also have a comment count property, calculated using queries. The articles should be ordered by date in descending order", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then(({ body }) => {
+        expect(typeof body.article.comment_count).toBe("number");
       });
   });
 });
@@ -422,6 +431,25 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toEqual("No article of that id found");
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  it("200: returns an array of all user objects, each containing a username, name & avatar_url property", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toBeInstanceOf(Array);
+        expect(body.users.length).toBeGreaterThan(0);
+        body.users.forEach((user) => {
+          expect(user).toMatchObject({
+            username: expect.any(String),
+            name: expect.any(String),
+            avatar_url: expect.any(String),
+          });
+        });
       });
   });
 });
