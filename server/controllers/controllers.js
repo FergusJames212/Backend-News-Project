@@ -19,12 +19,43 @@ exports.getTopics = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  fetchArticles()
-    .then((articles) => {
-      res.status(200).send({ articles });
+    if (req.query.hasOwnProperty("sort_by")) {
+        
+        const validSortBy = ["article_id", "title", "topic", "author", "body", "created_at", "votes", "article_img_url"];
+
+            if (!validSortBy.find(column => column === req.query.sort_by)) {
+                next("That column doesn't exist");
+            };
+    };
+
+    if (req.query.hasOwnProperty("order")) {
+        
+        const validOrder = ["ASC", "DESC"];
+
+            if (!validOrder.find(option => option === req.query.order.toUpperCase())) {
+                next("Invalid order");
+            };
+    };
+
+    queries = req.query; 
+    
+    const topicsCheck = fetchTopics()
+    const fetchedArticles = fetchArticles(queries)
+    
+    Promise.all([topicsCheck, fetchedArticles])
+    .then((response) => {
+        const topicObjects = response[0];
+        const articles = response[1];
+
+        if(req.query.hasOwnProperty("topic")) {
+            if (typeof topicObjects.find(topic => topic.slug === queries.topic) !== "object") {
+                return Promise.reject("That topic doesn't exist")
+            }
+        }
+        res.status(200).send({ articles })
     })
     .catch((err) => {
-      next(err);
+        next(err);
     });
 };
 
